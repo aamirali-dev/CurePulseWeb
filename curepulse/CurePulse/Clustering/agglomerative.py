@@ -78,3 +78,21 @@ class Agglomerative:
 
     def should_merge_clusters(self, centroid_distances, silhouette_scores):
         return False
+    
+    def fit_transform_accent(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
+                        labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
+        score_list = data
+        kmeans = KMeans(n_clusters=n_clusters)
+        score_list = score_list.reshape(-1, 1)
+        kmeans.fit(score_list)
+        cluster_labels = kmeans.labels_
+        cluster_centers = kmeans.cluster_centers_
+        first = cluster_labels[0]
+        last = cluster_labels[-1]
+        if len(labels) == 2:
+            total = sum(labels)
+            cluster_labels = (total - cluster_labels)
+        else:
+            cluster_labels = [labels[0] if x==first else labels[2] if x==last else labels[1] for x in cluster_labels]
+
+        return cluster_labels

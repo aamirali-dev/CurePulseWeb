@@ -9,7 +9,8 @@ def update_database():
 			date = str(Date(2023, 9, i))
 			controller = Controller()
 			controller.execute(date)
-		except:
-			continue
+		except Exception as e:
+			# print(e)
+			pass 
 
 update_database()
