@@ -1,0 +1,90 @@
+{% extends 'biolerplate.html' %} {% block content %} {% load static %}
+<link rel="stylesheet" href="{% static 'CSS/404.css' %}" />
+{% csrf_token %}
+<style>
+  /* Add your CSS styles here */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .d-flex {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .d-flex p {
+    margin: 0;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+
+  .d-flex #x-value,
+  .d-flex #y-value,
+  .d-flex #z-value,
+  .d-flex #id-value {
+    font-weight: normal;
+  }
+</style>
+<div>
+  <h1>Data Point Details</h1>
+  <span class="d-flex flex-row"
+    ><p>Negative Probability:</p>
+    <p id="x-value"></p
+  ></span>
+  <span class="d-flex flex-row"
+    ><p>Neutral Probability:</p>
+    <p id="y-value"></p
+  ></span>
+  <span class="d-flex flex-row"
+    ><p>Positive Probability:</p>
+    <p id="z-value"></p
+  ></span>
+  <span class="d-flex flex-row"
+    ><p>Call ID:</p>
+    <p id="id-value"></p
+  ></span>
+  <p>
+    <b>Please Note:</b> Any data corresponding to this ID can be displayed here
+    or on any website, either using GET request or API.
+  </p>
+</div>
+<script>
+  var urlParams = new URLSearchParams(window.location.search);
+
+  // Check if the 'data' parameter is present in the URL
+  if (urlParams.has("data")) {
+    // Get the value of the 'data' parameter
+    var dataParam = urlParams.get("data");
+
+    // Parse the JSON data from the parameter value
+    try {
+      var dataObject = JSON.parse(decodeURIComponent(dataParam));
+
+      // Now you can access the individual properties of the dataObject
+      var x = dataObject.x;
+      var y = dataObject.y;
+      var z = dataObject.z;
+      var ID = dataObject.ID;
+
+      // Use the data in your HTML as needed
+      document.getElementById("x-value").textContent = x;
+      document.getElementById("y-value").textContent = y;
+      document.getElementById("z-value").textContent = z;
+      document.getElementById("id-value").textContent = ID;
+    } catch (error) {
+      console.error("Error parsing JSON data:", error);
+    }
+  }
+</script>
+{% endblock %}

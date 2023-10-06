@@ -1,0 +1,133 @@
+/* HTML BODY CSS */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: mintcream;
+}
+
+/* Navigation Bar CSS */
+.navbar {
+    margin: 2px 2px;
+    padding: 5px;
+    justify-content: space-between;
+    color: white;
+    background-color: steelblue;
+    border-bottom: 4px solid coral;
+    border-radius: 10px;
+}
+
+.collapse {
+    margin: 5px 5px;
+    padding: 5px;
+    justify-content: space-between;
+    background-color: steelblue;
+}
+
+.collapse {
+    margin: 5px 100px;
+}
+
+.navbar-brand {
+    width: 50px;
+    height: 50px;
+}
+
+.Webtitle {
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    color: aliceblue;
+}
+
+.nav-link {
+    font-size: large;
+    margin: auto 30px;
+}
+
+.navButtons,
+.navLinks {
+    display: flex;
+    flex-direction: row;
+}
+
+
+.collapsing,
+.show {
+    display: flex;
+    flex-direction: row;
+    margin: 0px 100px;
+    padding: 0px;
+    justify-content: space-between;
+}
+
+
+/* Footer CSS */
+footer {
+    margin-top: auto;
+    width: 100%
+}
+
+.footer {
+    background-color: steelblue;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-around;
+    border-top: 4px solid coral;
+}
+
+.footer-row {
+    margin: 10px 0;
+}
+
+.footer-row a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.footer-row a:hover {
+    text-decoration: underline;
+}
+
+.button {
+    margin: 10px;
+    padding: 8px 15px;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: steelblue;
+    border: 1px solid coral;
+    color: white;
+}
+
+/* Scroll Button */
+#scrollToTopButton {
+    display: none;
+    position: fixed;
+    bottom: 45px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#scrollToTopButton:hover {
+    background-color: #0056b3;
+}

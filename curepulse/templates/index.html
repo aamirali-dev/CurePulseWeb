@@ -1,0 +1,347 @@
+{% extends 'biolerplate.html' %} {% block content %} {% load static %}
+<style>
+  body,
+  html {
+    font-family: Arial, sans-serif;
+    height: 100vh;
+  }
+  .container {
+    width: 300px;
+    height: fit-content;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  select,
+  input[type="date"],
+  input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  select {
+    height: 40px;
+  }
+  input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  .no-data-found {
+    margin: 20px;
+    text-align: center;
+    font-size: 18px;
+    color: #ff6347; /* A warning color (e.g., Tomato) */
+    padding: 20px;
+    background-color: #fff0f0; /* Light background color */
+    border: 1px solid #ff6347; /* Matching border color */
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+  }
+
+  .no-data-found::before {
+    content: "\26A0"; /* Unicode warning symbol */
+    font-size: 24px;
+    margin-right: 10px;
+  }
+
+  .no-data-found p {
+    margin: 0;
+  }
+</style>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{% if not toggle %}
+<div class="d-flex" style="height: 100vh">
+  <div class="container">
+    <form method="post">
+      {% csrf_token %}
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="score">Score:</label>
+      <select id="score" name="score" required>
+        <option value="" disabled selected>Select a Score</option>
+        <option value="1">Agent Accent Score</option>
+        <option value="2">Agent Tone Score</option>
+        <option value="3">Agent Text Score</option>
+        <option value="4">Client Tone Score</option>
+        <option value="5">Client Text Score</option>
+      </select>
+
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+  {% if data %} {% else %}
+  <div class="d-flex flex-column">
+    <div
+      id="scatter-plot-container"
+      style="margin: 20px; margin-right: auto"></div>
+    <div id="xy-plot-container" style="margin: 20px; margin-right: auto"></div>
+    <div id="yz-plot-container" style="margin: 20px; margin-right: auto"></div>
+    <div id="xz-plot-container" style="margin: 20px; margin-right: auto"></div>
+  </div>
+  {% endif %}
+</div>
+{% else %}
+<div class="d-flex flex-column" style="height: 100vh">
+  <div class="no-data-found">No data found.</div>
+  <div class="container">
+    <form method="post">
+      {% csrf_token %}
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="score">Score:</label>
+      <select id="score" name="score" required>
+        <option value="" disabled selected>Select a Score</option>
+        <option value="1">Agent Accent Score</option>
+        <option value="2">Agent Tone Score</option>
+        <option value="3">Agent Text Score</option>
+        <option value="4">Client Tone Score</option>
+        <option value="5">Client Text Score</option>
+      </select>
+
+      <input type="submit" value="Submit" />
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var jsonData = "{{ json_data|safe|escapejs }}";
+    jsonData = jsonData.replace(/'/g, '"');
+    var data = JSON.parse(jsonData).ClusteredData;
+
+    var uniqueStarRatings = [...new Set(data.map((point) => point.Star))];
+    var traces = [];
+    var colors = ["red", "green", "blue", "purple", "orange"];
+    var uniqueStars = [...new Set(data.map((point) => point.Star))];
+    uniqueStars.sort(function (a, b) {
+      return a - b;
+    });
+
+    uniqueStars.forEach((starRating, index) => {
+      var filteredData = data.filter((point) => point.Star === starRating);
+      var trace = {
+        x: filteredData.map((point) => point.Score[0]),
+        y: filteredData.map((point) => point.Score[1]),
+        z: filteredData.map((point) => point.Score[2]),
+        mode: "markers",
+        text: filteredData.map(
+          (point) =>
+            `Star: ${point.Star}<br>ID: ${
+              point._id
+            }<br>X: ${point.Score[0].toFixed(5)}<br>Y: ${point.Score[1].toFixed(
+              5
+            )}<br>Z: ${point.Score[2].toFixed(5)}`
+        ),
+        hoverinfo: "text",
+        marker: {
+          size: 7,
+          opacity: 0.8,
+          color: colors[index],
+        },
+        type: "scatter3d",
+        name: `${starRating} Star Rating`,
+      };
+      traces.push(trace);
+    });
+
+    var layout = {
+      scene: {
+        xaxis: { title: "Negative Sentiment", range: [0, 1] },
+        yaxis: { title: "Neutral Sentiment", range: [0, 1] },
+        zaxis: { title: "Positive Sentiment", range: [0, 1] },
+      },
+      width: 1000,
+      height: 1000,
+      showlegend: true,
+      legend: {
+        x: 1.1,
+        y: 0.5,
+        bgcolor: "rgba(255, 255, 255, 0.7)",
+        bordercolor: "black",
+        borderwidth: 2,
+        font: { color: "black" },
+      },
+    };
+
+    Plotly.newPlot("scatter-plot-container", traces, layout);
+
+    document
+      .getElementById("scatter-plot-container")
+      .on("plotly_click", function (eventData) {
+        var clickedPoint = eventData.points[0];
+        var ID = clickedPoint.text.match(/ID: ([a-f0-9]+)\b/i);
+        var postData = {
+          x: clickedPoint.x,
+          y: clickedPoint.y,
+          z: clickedPoint.z,
+          ID: ID[1],
+        };
+        var queryParams = `data=${encodeURIComponent(
+          JSON.stringify(postData)
+        )}`;
+        var newUrl = "datapoint";
+        newUrl += `?${queryParams}`;
+        window.location.href = newUrl;
+      });
+
+    var xyTraces = []; // Changed from xyTrace to xyTraces
+
+    uniqueStars.forEach((starRating) => {
+      var filteredData = data.filter((point) => point.Star === starRating);
+      var trace = {
+        x: filteredData.map((point) => point.Score[0]),
+        y: filteredData.map((point) => point.Score[1]),
+        mode: "markers",
+        text: filteredData.map(
+          (point) =>
+            `Star: ${point.Star}<br>ID: ${
+              point._id
+            }<br>X: ${point.Score[0].toFixed(5)}<br>Y: ${point.Score[1].toFixed(
+              5
+            )}`
+        ),
+        hoverinfo: "text",
+        marker: {
+          size: 7,
+          opacity: 0.8,
+          color: colors[starRating],
+        },
+        type: "scatter",
+        name: `${starRating} Star Rating`,
+      };
+      xyTraces.push(trace); // Push each trace into xyTraces array
+    });
+
+    var xyLayout = {
+      xaxis: { title: "X-Axis (Negative Sentiment)", range: [0, 1] },
+      yaxis: { title: "Y-Axis (Neutral Sentiment)", range: [0, 1] },
+      width: 1000,
+      height: 1000,
+      showlegend: true,
+      legend: {
+        x: 1.1,
+        y: 0.5,
+        bgcolor: "rgba(255, 255, 255, 0.7)",
+        bordercolor: "black",
+        borderwidth: 2,
+        font: { color: "black" },
+      },
+    };
+
+    Plotly.newPlot("xy-plot-container", xyTraces, xyLayout); // Use xyTraces instead of [xyTrace]
+
+    var yzTraces = [];
+
+    uniqueStars.forEach((starRating) => {
+      var filteredData = data.filter((point) => point.Star === starRating);
+      var trace = {
+        x: filteredData.map((point) => point.Score[1]),
+        y: filteredData.map((point) => point.Score[2]),
+        mode: "markers",
+        text: filteredData.map(
+          (point) =>
+            `Star: ${point.Star}<br>ID: ${
+              point._id
+            }<br>Y: ${point.Score[1].toFixed(5)}<br>Z: ${point.Score[2].toFixed(
+              5
+            )}`
+        ),
+        hoverinfo: "text",
+        marker: {
+          size: 7,
+          opacity: 0.8,
+          color: colors[starRating],
+        },
+        type: "scatter",
+        name: `${starRating} Star Rating`,
+      };
+      yzTraces.push(trace);
+    });
+
+    var yzLayout = {
+      xaxis: { title: "Y-Axis (Neutral Sentiment)", range: [0, 1] },
+      yaxis: { title: "Z-Axis (Positive Sentiment)", range: [0, 1] },
+      width: 1000,
+      height: 1000,
+      showlegend: true,
+      legend: {
+        x: 1.1,
+        y: 0.5,
+        bgcolor: "rgba(255, 255, 255, 0.7)",
+        bordercolor: "black",
+        borderwidth: 2,
+        font: { color: "black" },
+      },
+    };
+
+    Plotly.newPlot("yz-plot-container", yzTraces, yzLayout);
+
+    var xzTraces = [];
+
+    uniqueStars.forEach((starRating) => {
+      var filteredData = data.filter((point) => point.Star === starRating);
+      var trace = {
+        x: filteredData.map((point) => point.Score[0]),
+        y: filteredData.map((point) => point.Score[2]),
+        mode: "markers",
+        text: filteredData.map(
+          (point) =>
+            `Star: ${point.Star}<br>ID: ${
+              point._id
+            }<br>X: ${point.Score[0].toFixed(5)}<br>Z: ${point.Score[2].toFixed(
+              5
+            )}`
+        ),
+        hoverinfo: "text",
+        marker: {
+          size: 7,
+          opacity: 0.8,
+          color: colors[starRating],
+        },
+        type: "scatter",
+        name: `${starRating} Star Rating`,
+      };
+      xzTraces.push(trace);
+    });
+
+    var xzLayout = {
+      xaxis: { title: "X-Axis (Negative Sentiment)", range: [0, 1] },
+      yaxis: { title: "Z-Axis (Positive Sentiment)", range: [0, 1] },
+      width: 1000,
+      height: 1000,
+      showlegend: true,
+      legend: {
+        x: 1.1,
+        y: 0.5,
+        bgcolor: "rgba(255, 255, 255, 0.7)",
+        bordercolor: "black",
+        borderwidth: 2,
+        font: { color: "black" },
+      },
+    };
+
+    Plotly.newPlot("xz-plot-container", xzTraces, xzLayout);
+  });
+</script>
+{% endblock %}
