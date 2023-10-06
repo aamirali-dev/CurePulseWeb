@@ -78,7 +78,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
             try:
                 date = date.strftime('%Y-%m-%d')
                 data = json.dumps(DATA_LOADER.get_data(date, score_dict[score]))
-                return render(request, 'index.html', {'json_data': data, 'toggle': False, 'data' : False})
+                return render(request, 'index.html', {'json_data': data, 'toggle': False, 'data' : False, 'type': score != '1'})
             except:
                 return render(request, 'index.html', {'toggle': True})
         return HttpResponse("Invalid Form")
@@ -91,6 +91,6 @@ class DataPoint(TemplateView):
         if data_param:
             data = json.loads(data_param)
             call_id = data.get('ID')
-            data = json.dumps(DATA_LOADER.get_data_point(call_id))
+            data = DATA_LOADER.get_data_point(call_id)
             return render(request, 'datapoint.html', {'data': data})
         return HttpResponse("Invalid Request")

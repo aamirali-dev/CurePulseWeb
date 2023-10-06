@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,8 +23,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-005z22w-r=-zq6i!pt&7j$b!8ye_%#^mnw#)oa-)vl2uol2!_k'
 
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/1'
+CELERY_TIMEZONE = 'UTC'
+
+CELERY_BEAT_SCHEDULE = {
+	'update_database': {
+		'task': 'curepulse.tasks.update_database',
+		'schedule': crontab(hour=18, minute=0),
+	}
+}
+
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -39,6 +50,7 @@ INSTALLED_APPS = [
     'curepulse',
     'corsheaders',
     'djongo',
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -50,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'CurePulseWeb.urls'
@@ -118,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -144,3 +157,9 @@ CORS_ALLOWED_ORIGINS = ["http://localhost:8000"]
 CORS_ORIGIN_ALLOW_ALL = True
 
 LOGIN_REDIRECT_URL = ''
+
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]

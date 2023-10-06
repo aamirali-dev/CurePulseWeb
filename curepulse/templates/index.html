@@ -6,13 +6,15 @@
     height: 100vh;
   }
   .container {
+    background-color: aliceblue;
     width: 300px;
     height: fit-content;
-    margin: auto;
+    margin: 20px auto;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
   }
   label {
     display: block;
@@ -68,7 +70,7 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 {% if not toggle %}
-<div class="d-flex" style="height: 100vh">
+<div class="d-flex flex-column" style="height: 100vh">
   <div class="container">
     <form method="post">
       {% csrf_token %}
@@ -88,14 +90,22 @@
       <input type="submit" value="Submit" />
     </form>
   </div>
-  {% if data %} {% else %}
+  {% if data %} {% elif type %}
   <div class="d-flex flex-column">
-    <div
-      id="scatter-plot-container"
-      style="margin: 20px; margin-right: auto"></div>
-    <div id="xy-plot-container" style="margin: 20px; margin-right: auto"></div>
-    <div id="yz-plot-container" style="margin: 20px; margin-right: auto"></div>
-    <div id="xz-plot-container" style="margin: 20px; margin-right: auto"></div>
+    <div class="d-flex flex-row justify-content-around">
+      <div id="scatter-plot-container" style="margin: 20px"></div>
+      <div id="xy-plot-container" style="margin: 20px"></div>
+    </div>
+    <div class="d-flex flex-row justify-content-around">
+      <div id="yz-plot-container" style="margin: 20px"></div>
+      <div id="xz-plot-container" style="margin: 20px"></div>
+    </div>
+  </div>
+  {% else %}
+  <div class="d-flex flex-column">
+    <div class="d-flex flex-row justify-content-around">
+      <div id="scatter-plot-container-twod" style="margin: 20px"></div>
+    </div>
   </div>
   {% endif %}
 </div>
@@ -127,6 +137,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var jsonData = "{{ json_data|safe|escapejs }}";
+    console.log(jsonData)
     jsonData = jsonData.replace(/'/g, '"');
     var data = JSON.parse(jsonData).ClusteredData;
 
@@ -147,11 +158,7 @@
         mode: "markers",
         text: filteredData.map(
           (point) =>
-            `Star: ${point.Star}<br>ID: ${
-              point._id
-            }<br>X: ${point.Score[0].toFixed(5)}<br>Y: ${point.Score[1].toFixed(
-              5
-            )}<br>Z: ${point.Score[2].toFixed(5)}`
+            `Star: ${point.Star}<br>ID: ${point._id}<br>X: ${point.Score[0]}<br>Y: ${point.Score[1]}<br>Z: ${point.Score[2]}`
         ),
         hoverinfo: "text",
         marker: {
@@ -171,12 +178,12 @@
         yaxis: { title: "Neutral Sentiment", range: [0, 1] },
         zaxis: { title: "Positive Sentiment", range: [0, 1] },
       },
-      width: 1000,
-      height: 1000,
+      width: 800,
+      height: 800,
       showlegend: true,
       legend: {
-        x: 1.1,
-        y: 0.5,
+        x: 0.5,
+        y: 1.1,
         bgcolor: "rgba(255, 255, 255, 0.7)",
         bordercolor: "black",
         borderwidth: 2,
@@ -205,8 +212,7 @@
         window.location.href = newUrl;
       });
 
-    var xyTraces = []; // Changed from xyTrace to xyTraces
-
+    var xyTraces = [];
     uniqueStars.forEach((starRating) => {
       var filteredData = data.filter((point) => point.Star === starRating);
       var trace = {
@@ -215,11 +221,7 @@
         mode: "markers",
         text: filteredData.map(
           (point) =>
-            `Star: ${point.Star}<br>ID: ${
-              point._id
-            }<br>X: ${point.Score[0].toFixed(5)}<br>Y: ${point.Score[1].toFixed(
-              5
-            )}`
+            `Star: ${point.Star}<br>ID: ${point._id}<br>X: ${point.Score[0]}<br>Y: ${point.Score[1]}<br>ID : ${point._id}`
         ),
         hoverinfo: "text",
         marker: {
@@ -230,14 +232,14 @@
         type: "scatter",
         name: `${starRating} Star Rating`,
       };
-      xyTraces.push(trace); // Push each trace into xyTraces array
+      xyTraces.push(trace);
     });
 
     var xyLayout = {
       xaxis: { title: "X-Axis (Negative Sentiment)", range: [0, 1] },
       yaxis: { title: "Y-Axis (Neutral Sentiment)", range: [0, 1] },
-      width: 1000,
-      height: 1000,
+      width: 800,
+      height: 800,
       showlegend: true,
       legend: {
         x: 1.1,
@@ -261,11 +263,7 @@
         mode: "markers",
         text: filteredData.map(
           (point) =>
-            `Star: ${point.Star}<br>ID: ${
-              point._id
-            }<br>Y: ${point.Score[1].toFixed(5)}<br>Z: ${point.Score[2].toFixed(
-              5
-            )}`
+            `Star: ${point.Star}<br>ID: ${point._id}<br>Y: ${point.Score[1]}<br>Z: ${point.Score[2]}<br>ID : ${point._id}`
         ),
         hoverinfo: "text",
         marker: {
@@ -282,8 +280,8 @@
     var yzLayout = {
       xaxis: { title: "Y-Axis (Neutral Sentiment)", range: [0, 1] },
       yaxis: { title: "Z-Axis (Positive Sentiment)", range: [0, 1] },
-      width: 1000,
-      height: 1000,
+      width: 800,
+      height: 800,
       showlegend: true,
       legend: {
         x: 1.1,
@@ -307,11 +305,7 @@
         mode: "markers",
         text: filteredData.map(
           (point) =>
-            `Star: ${point.Star}<br>ID: ${
-              point._id
-            }<br>X: ${point.Score[0].toFixed(5)}<br>Z: ${point.Score[2].toFixed(
-              5
-            )}`
+            `Star: ${point.Star}<br>ID: ${point._id}<br>X: ${point.Score[0]}<br>Z: ${point.Score[2]}<br>ID : ${point._id}`
         ),
         hoverinfo: "text",
         marker: {
@@ -328,8 +322,8 @@
     var xzLayout = {
       xaxis: { title: "X-Axis (Negative Sentiment)", range: [0, 1] },
       yaxis: { title: "Z-Axis (Positive Sentiment)", range: [0, 1] },
-      width: 1000,
-      height: 1000,
+      width: 800,
+      height: 800,
       showlegend: true,
       legend: {
         x: 1.1,
@@ -343,5 +337,105 @@
 
     Plotly.newPlot("xz-plot-container", xzTraces, xzLayout);
   });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var colorPalette = [
+      "red",
+      "blue",
+      "green",
+      "purple",
+      "orange",
+      "pink",
+      "yellow",
+      "brown",
+      "black",
+    ];
+    var starToName = {
+      1: "1 Star",
+      2: "2 Star",
+      3: "3 Star",
+      4: "4 Star",
+      5: "5 Star",
+    };
+
+    var jsonData = "{{ json_data|safe|escapejs }}";
+    jsonData = jsonData.replace(/'/g, '"');
+    var data = JSON.parse(jsonData);
+
+    var xValues = data.ClusteredData.map(function (point) {
+      return point.Score;
+    });
+
+    var yValues = data.ClusteredData.map(function (point) {
+      return point.Language;
+    });
+    var colorMap = {};
+    data.ClusteredData.forEach(function (point) {
+      var group = point.Language + "_" + point.Star;
+      if (!colorMap.hasOwnProperty(group)) {
+        colorMap[group] = getRandomColor();
+      }
+    });
+
+    var traces = [];
+    data.ClusteredData.forEach(function (point) {
+      var group = point.Language + "_" + point.Star;
+
+      var trace = {
+        x: [point.Language],
+        y: [point.Score],
+        mode: "markers",
+        text: `Star: ${point.Star}<br>Language: ${point.Language}<br>Score: ${point.Score}<br>ID: ${point._id}`,
+        hoverinfo: "text",
+        marker: {
+          size: 10,
+          color: colorMap[group],
+        },
+        type: "scatter",
+        showlegend: false,
+      };
+      traces.push(trace);
+    });
+    var layout = {
+      title: "Agent Accent Scores",
+      xaxis: {
+        title: "Language",
+      },
+      yaxis: {
+        title: "Score",
+      },
+      hovermode: "closest",
+      width: 800,
+      height: 800,
+    };
+
+    Plotly.newPlot("scatter-plot-container-twod", traces, layout);
+
+    document
+      .getElementById("scatter-plot-container-twod")
+      .on("plotly_click", function (eventData) {
+        var clickedPoint = eventData.points[0];
+        console.log(clickedPoint.data.text);
+        var postData = {
+          x: "Language: " + clickedPoint.x,
+          y: "Score: " + clickedPoint.y,
+          ID: clickedPoint.data.text.match(/ID: ([a-f0-9]+)\b/i)[1],
+        };
+        var queryParams = `data=${encodeURIComponent(
+          JSON.stringify(postData)
+        )}`;
+        var newUrl = "datapoint";
+        newUrl += `?${queryParams}`;
+        window.location.href = newUrl;
+      });
+  });
+  function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
 </script>
 {% endblock %}

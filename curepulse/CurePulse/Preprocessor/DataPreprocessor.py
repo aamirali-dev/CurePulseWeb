@@ -41,16 +41,23 @@ class DataPreprocessor:
         pass 
 
     def split_accent_data(self, data):
-        data = data[['Agent_Accent_Score', 'Agent_Accent_Language']]
-        us = data.loc[data['Agent_Accent_Language']=='us']
-        canada = data.loc[data['Agent_Accent_Language']=='canada']
-        others = data.loc[data['Agent_Accent_Language'] != 'us']
-        others = others.loc[others['Agent_Accent_Language'] != 'canada']
-        data = {
-            'us': Data(us, us['Agent_Accent_Score'].values),
-            'canada': Data(canada, canada['Agent_Accent_Score'].values),
-            'others': Data(others, others['Agent_Accent_Score'].values),
-        }
+        score = 'Agent_Accent_Score'
+        language = 'Agent_Accent_Language'
+        data = data[[score, language]]
+        us = data.loc[data[language]=='us']
+        canada = data.loc[data[language]=='canada']
+        england = data.loc[data[language]=='england']
+        canada_and_england = pd.concat([canada, england])
+        others = data.loc[data[language] != 'us']
+        others = others.loc[others[language] != 'canada']
+        others = others.loc[others[language] != 'england']
+
+        data = {'us': us, 'canada_and_england': canada_and_england, 'others': others}
+        keys = ['us', 'canada_and_england', 'others']
+        for key in keys:
+            data[key] = data[key].sort_values(score)
+            data[key] = Data(data[key], data[key][score].values.reshape(-1, 1))
+
         return data
 
 

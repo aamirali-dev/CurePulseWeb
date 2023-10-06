@@ -5,6 +5,7 @@ from typing import Literal
 from scipy.spatial.distance import cdist
 
 
+
 class Agglomerative:
 
     def fit_transform(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
@@ -20,29 +21,21 @@ class Agglomerative:
             cluster_labels = clustering_model.fit_predict(data)
             if len(labels) == 2:
                 cluster_labels += labels[0]
-                # cluster_labels = [labels[0] if label == 0 else labels[1] for label in cluster_labels]
             else:
-                # cluster_labels = [3 for _ in cluster_labels]
                 cluster_labels *= 0
                 cluster_labels += 3
             
             original_distortion = self.calculate_distortion(data, cluster_labels)
-            # print("Label:", cluster_name)
-            # print(f"Original distortion (Model: {model_name}):", original_distortion)
             
             centroids = self.calculate_centroids(data, cluster_labels)
-            # print(f"Centroids (Model: {model_name}):", centroids)
             
             centroid_distances = self.calculate_centroid_distances(centroids)
-            # print(f"Centroid distances (Model: {model_name}):", centroid_distances)
             
             silhouette_scores = self.calculate_silhouette_scores(data, cluster_labels)
-            # print(f"Silhouette scores (Model: {model_name}):", silhouette_scores)
-            # print()
+
             if cluster_labels[0] == 2 or cluster_labels[0] == 4:
                 total = sum(labels)
                 cluster_labels = (total - cluster_labels)
-                # cluster_labels = [total - label for label in cluster_labels]
             return cluster_labels
         else:
             return np.array([labels[0]])
