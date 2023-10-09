@@ -10,7 +10,7 @@ def update_database():
 			controller = Controller()
 			controller.execute(date)
 		except Exception as e:
-			# print(e)
+			print(e)
 			pass 
 
 update_database()

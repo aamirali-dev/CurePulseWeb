@@ -1,7 +1,7 @@
-from DataLoader.MongoDBLoader import MongoDBLoader
+# from DataLoader.MongoDBLoader import MongoDBLoader
 # from .controller import Controller
-from Preprocessor.DataPreprocessor import DataPreprocessor
-from Clustering.agglomerative import Agglomerative
+# from Preprocessor.DataPreprocessor import DataPreprocessor
+# from Clustering.agglomerative import Agglomerative
 
 # loader = MongoDBLoader()
 # score = 'Agent_Accent_Score'
