@@ -1,6 +1,14 @@
+"""_summary_
+This is the MongoDB Loader file which is used to load the data from the MongoDB.
+"""
+
+import pandas as pd
 from pymongo import MongoClient
 
 class MongoDBLoader:
+    """_summary_
+    This is the MongoDB Loader class which is used to load the data from the MongoDB.
+    """
     def __init__(self) -> None:
         self.username = "ai_bootcamp"
         self.password = 'CureMD123'
@@ -9,7 +17,7 @@ class MongoDBLoader:
         self.port = '27017'
         self.collection_name = 'Calls_Data'
 
-    def get_data(self, date):
+    def get_data(self, date : int) -> list(pd.DataFrame):
         con = MongoClient(host=self.host, username=self.username, password=self.password, authSource=self.db_name)
         db = con[self.db_name]
         collection = db[self.collection_name]

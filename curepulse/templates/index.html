@@ -137,7 +137,6 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var jsonData = "{{ json_data|safe|escapejs }}";
-    console.log(jsonData)
     jsonData = jsonData.replace(/'/g, '"');
     var data = JSON.parse(jsonData).ClusteredData;
 
@@ -183,11 +182,19 @@
       showlegend: true,
       legend: {
         x: 0.5,
-        y: 1.1,
+        y: 1.2,
         bgcolor: "rgba(255, 255, 255, 0.7)",
         bordercolor: "black",
         borderwidth: 2,
         font: { color: "black" },
+        title: {
+          text: "3D Analysis of Sentiment Scores",
+          font: {
+            family: "Arial, sans-serif",
+            size: 18,
+            color: "black",
+          },
+        },
       },
     };
 
@@ -242,12 +249,20 @@
       height: 800,
       showlegend: true,
       legend: {
-        x: 1.1,
-        y: 0.5,
+        x: 0.5,
+        y: 1.2,
         bgcolor: "rgba(255, 255, 255, 0.7)",
         bordercolor: "black",
         borderwidth: 2,
         font: { color: "black" },
+        title: {
+          text: "2D X-Y Analysis of Sentiment Scores",
+          font: {
+            family: "Arial, sans-serif",
+            size: 18,
+            color: "black",
+          },
+        },
       },
     };
 
@@ -284,12 +299,20 @@
       height: 800,
       showlegend: true,
       legend: {
-        x: 1.1,
-        y: 0.5,
+        x: 0.5,
+        y: 1.2,
         bgcolor: "rgba(255, 255, 255, 0.7)",
         bordercolor: "black",
         borderwidth: 2,
         font: { color: "black" },
+        title: {
+          text: "2D Y-Z Analysis of Sentiment Scores",
+          font: {
+            family: "Arial, sans-serif",
+            size: 18,
+            color: "black",
+          },
+        },
       },
     };
 
@@ -326,12 +349,20 @@
       height: 800,
       showlegend: true,
       legend: {
-        x: 1.1,
-        y: 0.5,
+        x: 0.5,
+        y: 1.2,
         bgcolor: "rgba(255, 255, 255, 0.7)",
         bordercolor: "black",
         borderwidth: 2,
         font: { color: "black" },
+        title: {
+          text: "2D X-Z Analysis of Sentiment Scores",
+          font: {
+            family: "Arial, sans-serif",
+            size: 18,
+            color: "black",
+          },
+        },
       },
     };
 
@@ -407,6 +438,14 @@
       hovermode: "closest",
       width: 800,
       height: 800,
+      title: {
+        text: "2D Analysis of Acent Scores",
+        font: {
+          family: "Arial, sans-serif",
+          size: 18,
+          color: "black",
+        },
+      },
     };
 
     Plotly.newPlot("scatter-plot-container-twod", traces, layout);

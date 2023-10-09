@@ -1,21 +1,36 @@
+"""
+In this module, we have the Agglomerative class which is used to cluster the data using Agglomerative Clustering.
+"""
+
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN
-from sklearn.metrics import silhouette_score
 from typing import Literal
-from scipy.spatial.distance import cdist
-
 
 
 class Agglomerative:
+    """_summary_
+    This is the aggolomerative class which is used to cluster the data using Agglomerative Clustering.
+    """
 
-    def fit_transform(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
-                        labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
+    def fit_transform(self, data : np.array, n_clusters : int, linkage : Literal["ward", "average", "single", "complete"] = 'ward',
+                        labels :list(int) = None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative") -> np.array:
+        """_summary_
+        This function is sued to do clustering on the data using Agglomerative Clustering.
+        Args:
+            data (np.array): Array of data points, each consisting of three probabilities
+            n_clusters (int): Numbe rof clusters
+            linkage (Literal[&quot;ward&quot;, &quot;average&quot;, &quot;single&quot;, &quot;complete&quot;], optional): _description_. Defaults to 'ward'.
+            labels (list, optional): The custom labels to be given to each cluster. Defaults to None.
+            model_name (Literal[&quot;kmeans&quot;, &quot;dbscan&quot;, &quot;agglomerative&quot;], optional): The model used to do clustering. Defaults to "agglomerative".
+
+        Returns:
+            np.array: Labels of the clusters
+        """
         clustering_models = {
             'kmeans': KMeans(n_clusters=n_clusters),
             'dbscan': DBSCAN(eps=0.5, min_samples=5),
             'agglomerative': AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage)
         }
-        
         if data.shape[0] > 1:
             clustering_model = clustering_models[model_name.lower()]
             cluster_labels = clustering_model.fit_predict(data)
@@ -24,14 +39,6 @@ class Agglomerative:
             else:
                 cluster_labels *= 0
                 cluster_labels += 3
-            
-            original_distortion = self.calculate_distortion(data, cluster_labels)
-            
-            centroids = self.calculate_centroids(data, cluster_labels)
-            
-            centroid_distances = self.calculate_centroid_distances(centroids)
-            
-            silhouette_scores = self.calculate_silhouette_scores(data, cluster_labels)
 
             if cluster_labels[0] == 2 or cluster_labels[0] == 4:
                 total = sum(labels)
@@ -39,54 +46,24 @@ class Agglomerative:
             return cluster_labels
         else:
             return np.array([labels[0]])
-
-    def calculate_distortion(self, data, cluster_labels):
-        cluster_distortions = []
-        for label in np.unique(cluster_labels):
-            cluster_data = data[cluster_labels == label]
-            centroid = np.mean(cluster_data, axis=0)
-            distortion = np.sum(np.linalg.norm(cluster_data - centroid, axis=1) ** 2)
-            cluster_distortions.append(distortion)
-        
-        return cluster_distortions
-
-    def calculate_centroids(self, data, cluster_labels):
-        centroids = [np.mean(data[cluster_labels == label], axis=0) for label in np.unique(cluster_labels)]
-        return centroids
-
-    def calculate_centroid_distances(self, centroids):
-        centroid_distances = cdist(centroids, centroids)
-        np.fill_diagonal(centroid_distances, np.inf)
-        return centroid_distances
-
-    def calculate_silhouette_scores(self, data, cluster_labels):
-        if len(np.unique(cluster_labels)) == 1:
-            return [0.0]
-        else:
-            silhouette_scores = []
-            unique_labels = np.unique(cluster_labels)
-            
-            for label in unique_labels:
-                cluster_mask = [x == label for x in cluster_labels]
-                if cluster_mask.count(True) > 1:
-                    score = silhouette_score(data, cluster_labels, sample_size=None, metric='euclidean')
-                    silhouette_scores.append(score)
-                else:
-                    silhouette_scores.append(0.0)
-            
-            return silhouette_scores
-
-    def should_merge_clusters(self, centroid_distances, silhouette_scores):
-        return False
     
-    def fit_transform_accent(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
-                        labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
+    def fit_transform_accent(self, data : np.array, n_clusters : int ,linkage:Literal["ward", "average", "single", "complete"]='ward',
+                        labels:list(int)=None) -> np.array:
+        """_summary_
+        This function is sued to do clustering on the accent data using Agglomerative Clustering.
+        Args:
+            data (np.array): Array of data points, each consisting of three probabilities
+            n_clusters (int): Numbe rof clusters
+            linkage (Literal[&quot;ward&quot;, &quot;average&quot;, &quot;single&quot;, &quot;complete&quot;], optional): _description_. Defaults to 'ward'.
+            labels (list, optional): The custom labels to be given to each cluster. Defaults to None.
+        Returns:
+            np.array: Labels of the clusters
+        """
         score_list = data
         kmeans = KMeans(n_clusters=n_clusters)
         score_list = score_list.reshape(-1, 1)
         kmeans.fit(score_list)
         cluster_labels = kmeans.labels_
-        cluster_centers = kmeans.cluster_centers_
         first = cluster_labels[0]
         last = cluster_labels[-1]
         if len(labels) == 2:
