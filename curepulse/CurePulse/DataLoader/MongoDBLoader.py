@@ -18,6 +18,14 @@ class MongoDBLoader:
         self.collection_name = 'Calls_Data'
 
     def get_data(self, date : int) -> list(pd.DataFrame):
+        """_summary_
+        This function is used to get the data from the MongoDB.
+        Args:
+            date (int): _description_
+
+        Returns:
+            list(pd.Datafraem): _description_
+        """
         con = MongoClient(host=self.host, username=self.username, password=self.password, authSource=self.db_name)
         db = con[self.db_name]
         collection = db[self.collection_name]

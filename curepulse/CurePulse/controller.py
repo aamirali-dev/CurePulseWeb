@@ -1,3 +1,7 @@
+"""_summary_
+This is the controller file which is used to control the flow of the project.
+"""
+
 from .DataLoader.MongoDBLoader import MongoDBLoader
 from .Preprocessor.DataPreprocessor import DataPreprocessor
 from .Clustering.agglomerative import Agglomerative
@@ -7,7 +11,15 @@ import pandas as pd
 import numpy as np 
 
 class Controller:
-    def execute(self, date):
+    """_summary_
+    This is the controller class which is used to control the flow of the project.
+    """
+    def execute(self, date : int) -> None:
+        """_summary_
+        This function is used to execute the project.
+        Args:
+            date (int): _description_
+        """
         scores = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score']
         date = str(date)
         loader = MongoDBLoader()
@@ -29,15 +41,39 @@ class Controller:
         exporter.export_results(df)
         
 
-    def get_labels_by_key(self, key):
+    def get_labels_by_key(self, key : int) -> int:
+        """_summary_
+        This function is used to get the labels by key.
+        Args:
+            key (int): _description_
+
+        Returns:
+            int: _description_
+        """
         labels = {0: [1, 2], 1: [3], 2: [4, 5], 'us': [3, 4, 5], 'canada_and_england': [2, 3, 4], 'others': [1, 2]}
         return labels[key]
     
-    def get_cluster_name_by_key(self, key):
+    def get_cluster_name_by_key(self, key : int) -> str:
+        """_summary_
+        This function is used to get the cluster name by key.
+        Args:
+            key (int): _description_
+
+        Returns:
+            str: _description_
+        """
         cluster_names = {0: 'Negative', 1: 'Neutral', 2: 'Positive', 'us': 'us', 'canada_and_england': 'canada_and_england', 'others': 'others'}
         return cluster_names[key]
     
-    def get_n_clusters_by_key(self, key):
+    def get_n_clusters_by_key(self, key : str) -> int:
+        """_summary_
+        THis function is used to get the number of clusters by key.
+        Args:
+            key (str): _description_
+
+        Returns:
+            int: _description_
+        """
         cluster_numbers = {'us': 3, 'canada_and_england': 3, 'others': 2}
         return cluster_numbers[key]
     
