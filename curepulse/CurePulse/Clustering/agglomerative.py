@@ -69,6 +69,4 @@ class Agglomerative:
             cluster_labels = [labels[0] if x==first else labels[1] for x in cluster_labels]
         else:
             cluster_labels = [labels[0] if x==first else labels[2] if x==last else labels[1] for x in cluster_labels]
-        print(labels)
-        print(cluster_labels)
         return cluster_labels
