@@ -21,7 +21,7 @@ class MongoDBLoader:
         self.db = self.con[self.db_name]
         self.collection = self.db[self.collection_name]
 
-    def get_data(self, date : int, score : str) -> list(pd.DataFrame):
+    def get_data(self, date : int, score : str):
         """_summary_
         This function is used to get the data from the MongoDB.
         Args:
