@@ -31,9 +31,9 @@ class Controller:
             column_name = f'{score}_Star_Rating'
             for key in data.keys():
                 if score == 'Agent_Accent_Score':
-                    labels = model.fit_transform_accent(data[key].values, self.get_n_clusters_by_key(key), self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key), model_name='kmeans')
+                    labels = model.fit_transform_accent(data[key].values, self.get_n_clusters_by_key(key), labels=self.get_labels_by_key(key))
                 else:
-                    labels = model.fit_transform(data[key].values, 2, self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key))
+                    labels = model.fit_transform(data[key].values, 2, labels=self.get_labels_by_key(key))
                 data[key].df[column_name] = labels
             results = pd.concat([data[key].df for key in data.keys()])
             df = df.join(results[column_name].to_frame())

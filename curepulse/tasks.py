@@ -11,13 +11,13 @@ def update_database():
 	"""_summary_
  	This function is used to update the database with the latest data from the CurePulse API.
 	"""
-	for i in range(8, 25):
-		try:
-			date = str(Date(2023, 9, i))
-			controller = Controller()
-			controller.execute(date)
-		except Exception as e:
-			print(e)
-			pass 
+	today_date = Date.today()
+	try:
+		date = str(today_date)
+		controller = Controller()
+		controller.execute(date)
+	except Exception as e:
+		print(e)
+		pass 
 
 update_database()

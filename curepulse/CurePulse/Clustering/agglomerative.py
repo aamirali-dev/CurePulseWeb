@@ -13,7 +13,7 @@ class Agglomerative:
     """
 
     def fit_transform(self, data : np.array, n_clusters : int, linkage : Literal["ward", "average", "single", "complete"] = 'ward',
-                        labels :list(int) = None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative") -> np.array:
+                        labels = None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative") -> np.array:
         """_summary_
         This function is sued to do clustering on the data using Agglomerative Clustering.
         Args:
@@ -47,8 +47,7 @@ class Agglomerative:
         else:
             return np.array([labels[0]])
     
-    def fit_transform_accent(self, data : np.array, n_clusters : int ,linkage:Literal["ward", "average", "single", "complete"]='ward',
-                        labels:list(int)=None) -> np.array:
+    def fit_transform_accent(self, data : np.array, n_clusters : int, labels=None) -> np.array:
         """_summary_
         This function is sued to do clustering on the accent data using Agglomerative Clustering.
         Args:
@@ -67,9 +66,9 @@ class Agglomerative:
         first = cluster_labels[0]
         last = cluster_labels[-1]
         if len(labels) == 2:
-            total = sum(labels)
-            cluster_labels = (total - cluster_labels)
+            cluster_labels = [labels[0] if x==first else labels[1] for x in cluster_labels]
         else:
             cluster_labels = [labels[0] if x==first else labels[2] if x==last else labels[1] for x in cluster_labels]
-
+        print(labels)
+        print(cluster_labels)
         return cluster_labels

@@ -17,7 +17,7 @@ class MongoDBLoader:
         self.port = '27017'
         self.collection_name = 'Calls_Data'
 
-    def get_data(self, date : int) -> list(pd.DataFrame):
+    def get_data(self, date : int):
         """_summary_
         This function is used to get the data from the MongoDB.
         Args:
