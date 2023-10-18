@@ -10,20 +10,28 @@ class DataPreprocessor:
     def __init__(self, data):
         self.data = pd.DataFrame(data).set_index('_id')
 
-    def select_data(self, columns_to_keep = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores']):
+    def select_data(self, columns_to_keep = None):
         return self.data
 
     def split_and_sort(self, data, key):
         if key == 'Agent_Accent_Score':
             return self.split_accent_data(data)
+        if key == 'Agent_Language_Scores':
+            return self.select_language_data(data, key)
 
         lists_by_max_index = {}
+        # print(key)
         for (id, row) in data[key].items():
-            max_index = np.argmax(row)
-            if max_index not in lists_by_max_index:
-                lists_by_max_index[max_index] = []
-            lists_by_max_index[max_index].append((id, row))
-        
+            try:
+                if isinstance(row, dict):
+                    row = list(row.values())
+                max_index = np.argmax(row)
+                if max_index not in lists_by_max_index:
+                    lists_by_max_index[max_index] = []
+                lists_by_max_index[max_index].append((id, row))
+                # print(row, max_index)
+            except:
+                continue
         sorted_lists_dict = {max_index: sorted(sublists, key=lambda x: x[1][max_index], reverse=True) for max_index, sublists in lists_by_max_index.items()}
         sorted_lists_dict = {index: pd.DataFrame(sublist, columns=['_id', key]).set_index('_id') for index, sublist in sorted_lists_dict.items()}
         sorted_lists_dict = {index: Data(df,np.array([item[0] for item in df.values])) for index, df in sorted_lists_dict.items()}
@@ -57,8 +65,17 @@ class DataPreprocessor:
         for key in keys:
             data[key] = data[key].sort_values(score)
             data[key] = Data(data[key], data[key][score].values.reshape(-1, 1))
-
         return data
+    
+    def select_language_data(self, data, key):
+        df = data[key].to_frame()
+        df = pd.concat([df.drop(['Agent_Language_Scores'], axis=1), df['Agent_Language_Scores'].apply(pd.Series)], axis=1)
+        df_with_sum = df.copy()
+        df_with_sum['SUM'] = df_with_sum.values.sum(axis=1, keepdims=True)
+        return {key: Data(df_with_sum, df.values)}
 
+# us: 3 - 5 
+# eng + cad: 2-4 (not 4.5)
+# others: 1 - 2
 
     

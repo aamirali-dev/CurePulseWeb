@@ -29,7 +29,7 @@ class MongoDBLoader:
         data =  self.collection.find_one({'_id': ObjectId(str(obj_id))})
         data['obj_id'] = str(data['_id'])
         del data['_id']
-        print(data)
+        # print(data)
         return data 
     
     def get_accent_data(self, date, score):

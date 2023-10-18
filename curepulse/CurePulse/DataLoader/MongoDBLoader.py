@@ -15,4 +15,6 @@ class MongoDBLoader:
         collection = db[self.collection_name]
         data = list(collection.find({'Date': date}))
         con.close()
+        if len(data) <= 0:
+            raise ValueError(f'No data is present for {date}')
         return data

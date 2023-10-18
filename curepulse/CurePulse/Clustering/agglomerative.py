@@ -19,12 +19,7 @@ class Agglomerative:
         if data.shape[0] > 1:
             clustering_model = clustering_models[model_name.lower()]
             cluster_labels = clustering_model.fit_predict(data)
-            if len(labels) == 2:
-                cluster_labels += labels[0]
-            else:
-                cluster_labels *= 0
-                cluster_labels += 3
-            
+
             original_distortion = self.calculate_distortion(data, cluster_labels)
             
             centroids = self.calculate_centroids(data, cluster_labels)
@@ -32,12 +27,21 @@ class Agglomerative:
             centroid_distances = self.calculate_centroid_distances(centroids)
             
             silhouette_scores = self.calculate_silhouette_scores(data, cluster_labels)
-
-            if cluster_labels[0] == 2 or cluster_labels[0] == 4:
+            
+            if len(labels) == 7:
+                return self.transform_language_labels(data, labels, cluster_labels)
+            cluster_labels = np.vectorize(lambda x: float(labels[x]))(cluster_labels)
+            first = cluster_labels[0]
+            last = cluster_labels[-1]
+            if cluster_labels[0] == 2 or cluster_labels[0] == 3.0:
                 total = sum(labels)
                 cluster_labels = (total - cluster_labels)
+            elif labels[0] == 4:
+                cluster_labels = [labels[2] if x==first else labels[0] if x==last else labels[1] for x in cluster_labels]
             return cluster_labels
         else:
+            if labels[0]==1:
+                return np.array([labels[1]])
             return np.array([labels[0]])
 
     def calculate_distortion(self, data, cluster_labels):
@@ -86,13 +90,24 @@ class Agglomerative:
         score_list = score_list.reshape(-1, 1)
         kmeans.fit(score_list)
         cluster_labels = kmeans.labels_
-        cluster_centers = kmeans.cluster_centers_
-        first = cluster_labels[0]
-        last = cluster_labels[-1]
-        if len(labels) == 2:
-            total = sum(labels)
-            cluster_labels = (total - cluster_labels)
-        else:
-            cluster_labels = [labels[0] if x==first else labels[2] if x==last else labels[1] for x in cluster_labels]
+        unique_values, unique_indices = np.unique(cluster_labels, return_index=True)
+        unique_labels = list(zip(unique_values, unique_indices))
+        unique_labels = sorted(unique_labels, key=lambda x: x[1])
+        unique_labels = list(map(lambda x: x[0], unique_labels))
+        cluster_labels = np.vectorize(lambda x: float(labels[unique_labels.index(x)]))(cluster_labels)
 
+        return cluster_labels
+
+    def transform_language_labels(self, data, labels, cluster_labels):
+        label_averages = {}
+        for label in np.unique(cluster_labels):
+            current_data = data[cluster_labels==label]
+            current_data = np.average(current_data, axis=0, keepdims=True)
+            total = np.sum(current_data * 5)
+            label_averages[label] = total
+        label_averages = sorted(label_averages.items(), key=lambda x: x[1])
+        label_averages_keys = list(map(lambda x: x[0], label_averages))
+        cluster_labels = np.vectorize(lambda x: float(labels[label_averages_keys.index(x)]))(cluster_labels)
+        # print(label_averages)
+        # print(label_averages_keys)
         return cluster_labels
