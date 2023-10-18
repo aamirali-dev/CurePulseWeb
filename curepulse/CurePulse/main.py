@@ -1,8 +1,7 @@
 from DataLoader.MongoDBLoader import MongoDBLoader
-# from .controller import Controller
+from .controller import Controller
 from Preprocessor.DataPreprocessor import DataPreprocessor
 from Clustering.agglomerative import Agglomerative
-import numpy as np
 
 loader = MongoDBLoader()
 score = 'Agent_Language_Scores'
