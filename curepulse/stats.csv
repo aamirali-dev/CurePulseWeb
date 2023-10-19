@@ -1,0 +1,8 @@
+Rating,Client_Tone_Scores_Agg_Count,Client_Tone_Scores_Agg_Min,Client_Tone_Scores_Agg_Max,Client_Text_Scores_Agg_Count,Client_Text_Scores_Agg_Min,Client_Text_Scores_Agg_Max,Agent_Tone_Scores_Agg_Count,Agent_Tone_Scores_Agg_Min,Agent_Tone_Scores_Agg_Max,Agent_Text_Scores_Agg_Count,Agent_Text_Scores_Agg_Min,Agent_Text_Scores_Agg_Max,Agent_Accent_Score_US_Count,Agent_Accent_Score_US_Min,Agent_Accent_Score_US_Max,Agent_Accent_Score_BR_CA_Count,Agent_Accent_Score_BR_CA_Min,Agent_Accent_Score_BR_CA_Max,Agent_Accent_Score_OTHER_Count,Agent_Accent_Score_OTHER_Min,Agent_Accent_Score_OTHER_Max,Agent_Langauge_Score_Percentage_Count,Agent_Langauge_Score_Percentage_Min,Agent_Langauge_Score_Percentage_Max
+1.0,108,1.7,2.04,654,1.76,2.07,98,1.73,2.28,487,1.73,2.11,0.0,0.0,0.0,0.0,0.0,0.0,293.0,0.4,0.62,147,45.17,52.12
+2.0,648,2.05,2.28,858,2.07,2.21,367,2.28,2.59,883,2.11,2.26,0.0,0.0,0.0,157.0,0.43,0.58,168.0,0.62,0.85,295,52.17,54.91
+3.0,932,2.28,2.52,484,2.21,2.31,559,2.6,2.91,479,2.27,2.37,106.0,0.42,0.56,209.0,0.58,0.63,0.0,0.0,0.0,532,54.93,57.54
+3.5,785,2.52,2.77,500,2.31,2.46,752,2.91,3.25,697,2.37,2.6,402.0,0.56,0.66,423.0,0.63,0.71,0.0,0.0,0.0,811,57.55,60.58
+4.0,237,2.77,2.99,337,2.47,2.89,400,3.25,3.39,261,2.6,2.89,354.0,0.66,0.71,189.0,0.71,0.85,0.0,0.0,0.0,683,60.6,63.61
+4.5,131,2.99,3.39,40,2.91,3.27,459,3.39,3.66,58,2.9,3.58,439.0,0.71,0.79,0.0,0.0,0.0,0.0,0.0,0.0,251,63.62,65.64
+5.0,44,3.4,3.84,12,3.38,4.0,250,3.67,3.97,20,4.0,4.0,145.0,0.79,0.9,0.0,0.0,0.0,0.0,0.0,0.0,166,65.72,73.49

@@ -35,18 +35,12 @@ class DataPreprocessor:
         sorted_lists_dict = {max_index: sorted(sublists, key=lambda x: x[1][max_index], reverse=True) for max_index, sublists in lists_by_max_index.items()}
         sorted_lists_dict = {index: pd.DataFrame(sublist, columns=['_id', key]).set_index('_id') for index, sublist in sorted_lists_dict.items()}
         sorted_lists_dict = {index: Data(df,np.array([item[0] for item in df.values])) for index, df in sorted_lists_dict.items()}
-        
-        # for i, sublist in sorted_lists_dict.items():
-        #     print(f"List Number {i}:")
-        #     print("Total Calls:", len(sublist))
-        #     print("Percent of Total Calls:", round(len(sublist) / len(data) * 100, 2), "%")
-        #     print(sublist)
-        #     print()
     
         return sorted_lists_dict
 
-    def process_data(self, data, key):
-        pass 
+    def process_data(self, columns, new_columns, transformations):
+        for i in range(len(columns)):
+            self.data[new_columns[i]] = self.data[columns[i]].apply(transformations[i])
 
     def split_accent_data(self, data):
         score = 'Agent_Accent_Score'

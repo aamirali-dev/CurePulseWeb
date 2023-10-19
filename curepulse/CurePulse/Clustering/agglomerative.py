@@ -86,7 +86,8 @@ class Agglomerative:
     def fit_transform_accent(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
                         labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
         score_list = data
-        kmeans = KMeans(n_clusters=n_clusters)
+        # kmeans = KMeans(n_clusters=n_clusters)
+        kmeans = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage)
         score_list = score_list.reshape(-1, 1)
         kmeans.fit(score_list)
         cluster_labels = kmeans.labels_
