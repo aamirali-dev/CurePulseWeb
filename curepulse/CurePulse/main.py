@@ -1,9 +1,9 @@
-from DataLoader.MongoDBLoader import MongoDBLoader
+from DataLoader.MongoDBLoader import MongoDbDailyDataLoader
 from .controller import Controller
 from Preprocessor.DataPreprocessor import DataPreprocessor
 from Clustering.agglomerative import Agglomerative
 
-loader = MongoDBLoader()
+loader = MongoDbDailyDataLoader()
 score = 'Agent_Language_Scores'
 processor = DataPreprocessor(loader.get_data('2023-10-13'))
 model = Agglomerative()
