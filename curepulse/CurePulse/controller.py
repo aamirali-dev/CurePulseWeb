@@ -9,7 +9,7 @@ import traceback
 
 class Controller:
     def execute(self, date):
-        scores = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Language_Scores']
+        scores = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
         date = str(date)
         loader = MongoDBLoader()
         processor = DataPreprocessor(loader.get_data(date))
@@ -20,7 +20,6 @@ class Controller:
     def fit_transform(self, model, processor, scores, id):
         df = processor.select_data()
         for score in scores:
-            # print(score)
             try: 
                 data = processor.split_and_sort(df, score)
             except Exception as e:
@@ -33,14 +32,11 @@ class Controller:
                     if score == 'Agent_Accent_Score':
                         labels = model.fit_transform_accent(data[key].values, self.get_n_clusters_by_key(key), self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key), model_name='kmeans')
                     else:
-                        labels = model.fit_transform(data[key].values, self.get_n_clusters_by_key(key), self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key), linkage="average")
+                        labels = model.fit_transform(data[key].values, self.get_n_clusters_by_key(key), self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key), linkage="ward")
                     data[key].df[column_name] = labels
-                    # print(data[key].df)
                 except ValueError as e:
                     print(f'{score}:{key} has zero sampels on {id}')
-            # print(data)
             results = pd.concat([data[key].df for key in data.keys()])
-            # print(results[column_name].isna().sum())
             df = df.join(results[column_name].to_frame())
         df = df.fillna(0)
         return df
@@ -96,38 +92,3 @@ class Controller:
         if key in aggregated_scores:
             return 7
         return cluster_numbers[key]
-    
-
-
-    def fit_transform_x(self, model, processor, scores, id):
-        df = processor.select_data()
-        for score in scores:
-            # print(score)
-            column_name = f'{score}_Star_Rating'
-            try: 
-                if score == 'Agent_Accent_Score':
-                    data = processor.split_and_sort(df, score)
-                    for key in data.keys():
-                        try:
-                            labels = model.fit_transform_accent(data[key].values, self.get_n_clusters_by_key(key), self.get_cluster_name_by_key(key), labels=self.get_labels_by_key(key), model_name='kmeans')
-                            data[key].df[column_name] = labels
-                        except ValueError as e:
-                            print(f'{score}:{key} has zero sampels on {id}')
-                    results = pd.concat([data[key].df for key in data.keys()])
-                    print(results)
-                else:
-                    data = df[score].values
-                    labels = model.fit_transform(data.reshape(-1, 1), self.get_n_clusters_by_key(score), self.get_cluster_name_by_key(score), labels=self.get_labels_by_key(score))
-                    results = df[score].to_frame()
-                    results[column_name] = labels
-                    print(results)
-            except Exception as e:
-                traceback.print_exc()
-                print(f'No data found for {score} on {id}')
-                continue
-            # print(results[column_name].isna().sum())
-            df = df.join(results[column_name].to_frame())
-        df = df.fillna(0)
-        return df
-
-

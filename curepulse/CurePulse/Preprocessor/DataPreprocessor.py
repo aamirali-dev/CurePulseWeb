@@ -16,11 +16,10 @@ class DataPreprocessor:
     def split_and_sort(self, data, key):
         if key == 'Agent_Accent_Score':
             return self.split_accent_data(data)
-        if key == 'Agent_Language_Scores':
+        if key == 'Agent_Langauge_Score_Percentage':
             return self.select_language_data(data, key)
 
         lists_by_max_index = {}
-        # print(key)
         for (id, row) in data[key].items():
             try:
                 if isinstance(row, dict):
@@ -29,7 +28,6 @@ class DataPreprocessor:
                 if max_index not in lists_by_max_index:
                     lists_by_max_index[max_index] = []
                 lists_by_max_index[max_index].append((id, row))
-                # print(row, max_index)
             except:
                 continue
         sorted_lists_dict = {max_index: sorted(sublists, key=lambda x: x[1][max_index], reverse=True) for max_index, sublists in lists_by_max_index.items()}
@@ -63,13 +61,8 @@ class DataPreprocessor:
     
     def select_language_data(self, data, key):
         df = data[key].to_frame()
-        df = pd.concat([df.drop(['Agent_Language_Scores'], axis=1), df['Agent_Language_Scores'].apply(pd.Series)], axis=1)
+        df = pd.concat([df.drop(['Agent_Langauge_Score_Percentage'], axis=1), df['Agent_Langauge_Score_Percentage'].apply(pd.Series)], axis=1)
         df_with_sum = df.copy()
         df_with_sum['SUM'] = df_with_sum.values.sum(axis=1, keepdims=True)
         return {key: Data(df_with_sum, df.values)}
-
-# us: 3 - 5 
-# eng + cad: 2-4 (not 4.5)
-# others: 1 - 2
-
     

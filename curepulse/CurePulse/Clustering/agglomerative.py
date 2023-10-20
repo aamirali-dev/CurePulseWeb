@@ -17,28 +17,37 @@ class Agglomerative:
         }
         
         if data.shape[0] > 1:
-            clustering_model = clustering_models[model_name.lower()]
-            cluster_labels = clustering_model.fit_predict(data)
-
-            original_distortion = self.calculate_distortion(data, cluster_labels)
-            
-            centroids = self.calculate_centroids(data, cluster_labels)
-            
-            centroid_distances = self.calculate_centroid_distances(centroids)
-            
-            silhouette_scores = self.calculate_silhouette_scores(data, cluster_labels)
-            
-            if len(labels) == 7:
-                return self.transform_language_labels(data, labels, cluster_labels)
-            cluster_labels = np.vectorize(lambda x: float(labels[x]))(cluster_labels)
-            first = cluster_labels[0]
-            last = cluster_labels[-1]
-            if cluster_labels[0] == 2 or cluster_labels[0] == 3.0:
-                total = sum(labels)
-                cluster_labels = (total - cluster_labels)
-            elif labels[0] == 4:
-                cluster_labels = [labels[2] if x==first else labels[0] if x==last else labels[1] for x in cluster_labels]
-            return cluster_labels
+            if data.shape[1] == 1:
+                print("Language")
+                clustering_model = clustering_models[model_name.lower()]
+                cluster_labels = clustering_model.fit_predict(data.reshape(-1, 1))            
+                if len(labels) == 7:
+                    return self.transform_language_labels(data, labels, cluster_labels)
+                cluster_labels = np.vectorize(lambda x: float(labels[x]))(cluster_labels)
+                first = cluster_labels[0]
+                last = cluster_labels[-1]
+                if cluster_labels[0] == 2 or cluster_labels[0] == 3.0:
+                    total = sum(labels)
+                    cluster_labels = (total - cluster_labels)
+                elif labels[0] == 4:
+                    cluster_labels = [labels[2] if x==first else labels[0] if x==last else labels[1] for x in cluster_labels]
+                return cluster_labels
+            else:
+                clustering_model = clustering_models[model_name.lower()]
+                first_element_max_column = np.argmax(data[0])
+                selected_column = (data[:, first_element_max_column]).reshape(-1, 1)
+                cluster_labels = clustering_model.fit_predict(selected_column)            
+                if len(labels) == 7:
+                    return self.transform_language_labels(data, labels, cluster_labels)
+                cluster_labels = np.vectorize(lambda x: float(labels[x]))(cluster_labels)
+                first = cluster_labels[0]
+                last = cluster_labels[-1]
+                if cluster_labels[0] == 2 or cluster_labels[0] == 3.0:
+                    total = sum(labels)
+                    cluster_labels = (total - cluster_labels)
+                elif labels[0] == 4:
+                    cluster_labels = [labels[2] if x==first else labels[0] if x==last else labels[1] for x in cluster_labels]
+                return cluster_labels
         else:
             if labels[0]==1:
                 return np.array([labels[1]])
@@ -86,7 +95,6 @@ class Agglomerative:
     def fit_transform_accent(self, data, n_clusters,cluster_name,linkage:Literal["ward", "average", "single", "complete"]='ward',
                         labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
         score_list = data
-        # kmeans = KMeans(n_clusters=n_clusters)
         kmeans = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage)
         score_list = score_list.reshape(-1, 1)
         kmeans.fit(score_list)
@@ -109,6 +117,4 @@ class Agglomerative:
         label_averages = sorted(label_averages.items(), key=lambda x: x[1])
         label_averages_keys = list(map(lambda x: x[0], label_averages))
         cluster_labels = np.vectorize(lambda x: float(labels[label_averages_keys.index(x)]))(cluster_labels)
-        # print(label_averages)
-        # print(label_averages_keys)
         return cluster_labels
