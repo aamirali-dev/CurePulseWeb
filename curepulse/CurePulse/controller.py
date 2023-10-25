@@ -2,14 +2,14 @@ from .DataLoader.MongoDBLoader import MongoDBLoader
 from .Preprocessor.DataPreprocessor import DataPreprocessor
 from .Clustering.agglomerative import Agglomerative
 from .DataExporter.MongoDBExporter import MongoDBExporter
-from datetime import date as Date
 import pandas as pd
 import numpy as np 
 import traceback
+from collections import Counter
 
 class Controller:
     def execute(self, date):
-        scores = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
+        scores = ['Agent_Tone_Scores', 'Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
         date = str(date)
         loader = MongoDBLoader()
         processor = DataPreprocessor(loader.get_data(date))
@@ -18,7 +18,7 @@ class Controller:
         exporter.export_results(results)
     
     def fit_transform(self, model, processor, scores, id):
-        df = processor.select_data()
+        df = processor.get_data()
         for score in scores:
             try: 
                 data = processor.split_and_sort(df, score)
@@ -92,3 +92,41 @@ class Controller:
         if key in aggregated_scores:
             return 7
         return cluster_numbers[key]
+    
+    def fit_transform_data(self, data, scores):
+        processor = DataPreprocessor(data)
+        for score in scores:
+            orig_data, data = processor.select_data(score)
+            mu = np.mean(data)
+            sigma = np.std(data)
+            grade_ranges = [
+            (mu + 2 * sigma, 5.0),
+            (mu + 1.25 * sigma, 4.5),
+            (mu + 0.625 * sigma, 4.0),
+            (mu - 0.625 * sigma, 3.5),
+            (mu - 1.25 * sigma, 3.0),
+            (mu - 2 * sigma, 2.0),
+            (float('-inf'), 1.0)
+            ]
+            grade_values = []
+
+            for value in data:
+                for threshold, grade in grade_ranges:
+                    if value >= threshold:
+                        grade_values.append(grade)
+                        break
+            orig_data[f'{score}_Star_Rating'] = grade_values
+            # grade_ranges = {}
+            # for grade in set(grade_values):
+            #     grade_data = [data[i] for i in range(len(grade_values)) if grade_values[i] == grade]
+            #     min_score = min(grade_data)
+            #     max_score = max(grade_data)
+            #     grade_ranges[grade] = (min_score, max_score)
+            # print("Maximum" , np.max(data))
+            # print("Minimum", np.min(data))
+            # grade_counts = Counter(grade_values)
+            # for grade, count in grade_counts.items():
+            #     print(f"Grade {grade}: {count} times")
+            # for grade, (min_score, max_score) in grade_ranges.items():
+            #     print(f"Grade {grade}: Range from {min_score} to {max_score}")
+        return orig_data

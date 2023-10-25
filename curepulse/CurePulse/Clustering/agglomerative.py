@@ -18,7 +18,7 @@ class Agglomerative:
         
         if data.shape[0] > 1:
             if data.shape[1] == 1:
-                print("Language")
+                # print("Language")
                 clustering_model = clustering_models[model_name.lower()]
                 cluster_labels = clustering_model.fit_predict(data.reshape(-1, 1))            
                 if len(labels) == 7:
@@ -33,6 +33,9 @@ class Agglomerative:
                     cluster_labels = [labels[2] if x==first else labels[0] if x==last else labels[1] for x in cluster_labels]
                 return cluster_labels
             else:
+                # print("Data")
+                # print(data)
+                # print(data.shape)
                 clustering_model = clustering_models[model_name.lower()]
                 first_element_max_column = np.argmax(data[0])
                 selected_column = (data[:, first_element_max_column]).reshape(-1, 1)
@@ -118,3 +121,13 @@ class Agglomerative:
         label_averages_keys = list(map(lambda x: x[0], label_averages))
         cluster_labels = np.vectorize(lambda x: float(labels[label_averages_keys.index(x)]))(cluster_labels)
         return cluster_labels
+    
+    def relative_fit(self, data, n_clusters = 7,linkage:Literal["ward", "average", "single", "complete"]='ward',
+                        labels=None, model_name : Literal["kmeans", "dbscan", "agglomerative"] = "agglomerative"):
+        clustering_models = {
+            'kmeans': KMeans(n_clusters=n_clusters),
+            'dbscan': DBSCAN(eps=0.5, min_samples=5),
+            'agglomerative': AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage)
+        }
+        
+        

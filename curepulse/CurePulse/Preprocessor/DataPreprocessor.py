@@ -10,8 +10,28 @@ class DataPreprocessor:
     def __init__(self, data):
         self.data = pd.DataFrame(data).set_index('_id')
 
-    def select_data(self, columns_to_keep = None):
+    def dict_to_list(self, x):
+        if isinstance(x, dict):
+            # print(list(x.values()))
+            return list(x.values())
+        return x
+    
+    def get_data(self):
         return self.data
+    
+    def select_data(self, column):
+        if column == 'Agent_Accent_Score':
+            return self.split_accent_data(data)
+        if column == 'Agent_Langauge_Score_Percentage':
+            return self.select_language_data(data, column)
+        
+        raw_data = self.data[column]
+        raw_data = raw_data.apply(self.dict_to_list)
+        raw_data = np.array(raw_data.values.tolist())
+        factors = np.array([1, 5, 10])
+        data = np.sum(raw_data * factors, axis=1)
+        data = data.reshape(-1, 1)
+        return self.data, data
 
     def split_and_sort(self, data, key):
         if key == 'Agent_Accent_Score':
@@ -65,4 +85,5 @@ class DataPreprocessor:
         df_with_sum = df.copy()
         df_with_sum['SUM'] = df_with_sum.values.sum(axis=1, keepdims=True)
         return {key: Data(df_with_sum, df.values)}
+    
     

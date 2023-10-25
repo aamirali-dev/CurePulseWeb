@@ -24,7 +24,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 @shared_task
 def update_database_weekly():
-	numdays = 7
+	# numdays = 7
 	loader = MongoDBLoader()
 	data = []
 	for i in range(10,18):
@@ -34,7 +34,7 @@ def update_database_weekly():
 			print(f'Task: {e}')
 	print(len(data))
 	processor = DataPreprocessor(data)
-	scores = ['Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Tone_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
+	scores = ['Agent_Tone_Scores','Client_Tone_Scores', 'Client_Text_Scores', 'Agent_Text_Scores', 'Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
 	controller = Controller()
 	df = controller.fit_transform(Agglomerative(), processor, scores, "10-17 October")
 	exporter = CSVExporter()

@@ -54,8 +54,8 @@ class CSVExporter:
             df = df.join(value_counts)
             df = df.join(rating_range)
             df = df.fillna(0.0)
-        print(df.T)
-        print(df.columns)
+        # print(df.T)
+        # print(df.columns)
         cols = ['Agent_Accent_Score', 'Agent_Langauge_Score_Percentage']
         score = cols[0]
         column_name = f'{score}_Star_Rating'
