@@ -27,7 +27,7 @@ def update_database_weekly():
 	# numdays = 7
 	loader = MongoDBLoader()
 	data = []
-	for i in range(10,18):
+	for i in range(10,26):
 		try:
 			data += loader.get_data(str(Date(2023, 10, i)))
 		except Exception as e:

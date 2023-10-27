@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import numpy as np
 import pandas as pd
 from collections import namedtuple
-
+from scipy.stats import boxcox
 
 Data = namedtuple('Data', ['df', 'values'])
 
@@ -28,10 +28,17 @@ class DataPreprocessor:
         raw_data = self.data[column]
         raw_data = raw_data.apply(self.dict_to_list)
         raw_data = np.array(raw_data.values.tolist())
-        factors = np.array([1, 5, 10])
+        factors = np.array([1,2,4])
         data = np.sum(raw_data * factors, axis=1)
         data = data.reshape(-1, 1)
-        return self.data, data
+        print(np.min(data), np.max(data))
+        # mean = np.mean(data)
+        # std_dev = np.std(data)
+        # normalized_data = (data - mean) / std_dev
+        # log_transformed_data = np.log(normalized_data + 1e-10)
+        boxcox_transformed_data, _ = boxcox(data[:, 0])
+        print(boxcox_transformed_data)
+        return self.data, boxcox_transformed_data
 
     def split_and_sort(self, data, key):
         if key == 'Agent_Accent_Score':

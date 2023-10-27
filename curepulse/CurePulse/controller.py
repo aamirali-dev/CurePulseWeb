@@ -116,6 +116,7 @@ class Controller:
                         grade_values.append(grade)
                         break
             orig_data[f'{score}_Star_Rating'] = grade_values
+            orig_data[f'{score}_Val'] = data
             # grade_ranges = {}
             # for grade in set(grade_values):
             #     grade_data = [data[i] for i in range(len(grade_values)) if grade_values[i] == grade]

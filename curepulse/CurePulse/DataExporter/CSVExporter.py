@@ -92,7 +92,8 @@ class CSVExporter:
         rating_range.columns = [f'{score}_Min', f'{score}_Max']
         df = df.join(value_counts)
         df = df.join(rating_range)
-        df = df.fillna(0.0).applymap(lambda x: self.round_array(x) if isinstance(x, list) else round(x, 5))
+        df = df.fillna(0.01)
+        # df = df.fillna(0.0).applymap(lambda x: self.round_array(x) if isinstance(x, list) else round(x, 10))
         df.to_csv(self.filename)
     
     def split_array_to_columns(self, grouped_df, column_name, array_column_name):
@@ -117,7 +118,7 @@ class CSVExporter:
         return result
     
     def round_array(self, arr):
-        return [round(x, 5) for x in arr]
+        return [round(x, 10) for x in arr]
     
     def transform_list_to_single_value(self, input):
         if len(input) == 0:
